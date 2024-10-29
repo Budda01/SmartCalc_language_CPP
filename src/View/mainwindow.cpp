@@ -145,7 +145,7 @@ void MainWindow::on_pushButton_CREDIT_clicked() {
   credit->show();
 }
 
-void MainWindow::simple_exp() {
+void MainWindow::simpleExp() {
   QString input = ui->result->text();
   QByteArray byteArray = input.toUtf8();
   const std::string strInput = byteArray.constData();
@@ -153,7 +153,9 @@ void MainWindow::simple_exp() {
   s21::Controller controller(&model);
   try {
     std::string executorOutput = controller.Executor(strInput);
+    stringConverter(executorOutput);
     double resultValue = std::stod(executorOutput);
+    std::cout <<"Huina " << resultValue << std::endl;
     QString qOutput = QString::number(resultValue, 'g', 15);
     qOutput.replace(",",".");
     ui->result->setText(qOutput);
@@ -164,7 +166,15 @@ void MainWindow::simple_exp() {
   }
 }
 
-void MainWindow::calc_values() {
+void MainWindow::stringConverter(std::string& input){
+  for (auto i = input.begin(); i != input.end(); ++i){
+    if (*i == '.'){
+      *i = ',';
+    }
+  }
+}
+
+void MainWindow::calcValues() {
   double res[100] = {0};
   int j = 0;
   QString input = ui->result->text();
@@ -186,6 +196,7 @@ void MainWindow::calc_values() {
     const std::string strInput = byteArray.constData();
     try {
       std::string executorOutput = controller.Executor(strInput);
+      stringConverter(executorOutput);
       resultValue = std::stod(executorOutput);
       res[j] = resultValue;
     } catch (const std::invalid_argument& e) {
@@ -204,7 +215,7 @@ void MainWindow::calc_values() {
   
 }
 
-void MainWindow::calc_one_value(QString for_x_calc) {
+void MainWindow::calcOneValue(QString for_x_calc) {
     QString calc_one = ui->result->text();
     calc_one.replace("X = ", "");
     for_x_calc.replace("x", "(Q)");
@@ -215,6 +226,7 @@ void MainWindow::calc_one_value(QString for_x_calc) {
     s21::Controller controller(&model);
     try {
         std::string executorOutput = controller.Executor(strInput);
+        stringConverter(executorOutput);
         double resultValue = std::stod(executorOutput);
         QString qOutput = QString::number(resultValue, 'g', 15);
         qOutput.replace(",","."); 
@@ -236,13 +248,13 @@ void MainWindow::on_pushButton_EQ_clicked() {
         check_calc = 1;
       } else if (ui->Graf->isChecked()) {
         openGraph();
-        calc_values();
+        calcValues();
       }
     } else {
-      simple_exp();
+      simpleExp();
     }
   } else {
     check_calc = 0;
-    calc_one_value(for_x_calc);
+    calcOneValue(for_x_calc);
   }
 }

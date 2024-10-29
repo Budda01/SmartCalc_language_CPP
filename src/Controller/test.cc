@@ -2,7 +2,7 @@
 // #include "controller.h"
 
 // int main(){
-//   s21::Model model;  
+//   s21::Model model;
 //   s21::Controller contr(&model);
 // std::string sum = "60000";
 // std::string time = "25";

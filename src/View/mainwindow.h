@@ -63,10 +63,11 @@ class MainWindow : public QMainWindow {
   void on_pushButton_SQRT_clicked();
   void on_pushButton_MOD_clicked();
   void on_pushButton_EQ_clicked();
-  void simple_exp();
-  void calc_values();
+  void simpleExp();
+  void calcValues();
   void on_pushButton_X_clicked();
   void on_pushButton_CREDIT_clicked();
-  void calc_one_value(QString for_x_calc);
+  void calcOneValue(QString for_x_calc);
+  void stringConverter(std::string& input);
 };
 #endif  // MAINWINDOW_H

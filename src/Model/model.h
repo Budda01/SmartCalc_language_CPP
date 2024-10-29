@@ -4,13 +4,12 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
-#include <deque>
-#include <iostream>
-#include <stack>
-#include <string>
-#include <sstream>
-#include <stdexcept>
 #include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <stack>
+#include <deque>
+#include <string>
 
 namespace s21 {
 
@@ -73,8 +72,10 @@ class Model {
   int BinOpCalc(std::stack<Model::Node>& stack, Model::NodeType oper);
   void UnOpCalc(std::stack<Model::Node>& stack, Model::NodeType oper);
 
-  int DiffCreditCalc(const std::string& sum, const std::string& time, const std::string& rate, std::string& output);
-  int AnnCreditCalc(const std::string& sum, const std::string& time, const std::string& rate, std::string& output);
+  int DiffCreditCalc(const std::string& sum, const std::string& time,
+                     const std::string& rate, std::string& output);
+  int AnnCreditCalc(const std::string& sum, const std::string& time,
+                    const std::string& rate, std::string& output);
 };
 
 }  // namespace s21

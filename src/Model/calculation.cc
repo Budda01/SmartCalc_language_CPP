@@ -106,8 +106,10 @@ int Model::SmartCalc(const std::string input, std::string& result) {
   if (err == 0) {
     res = CalcExp(queue, err);
   }
-  result = std::to_string(res);
+  std::ostringstream stream;
+  stream << std::fixed << std::setprecision(7) << res;
+  result = stream.str();
   return err;
 }
 
-}
+}  // namespace s21

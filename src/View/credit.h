@@ -3,7 +3,6 @@
 
 #include <QMainWindow>
 
-
 namespace Ui {
 class Credit;
 }
@@ -15,7 +14,7 @@ class Credit : public QMainWindow {
   explicit Credit(QWidget *parent = nullptr);
   ~Credit();
   int count = 1;
-  QString ConvStr(std::string& result);
+  QString ConvStr(std::string &result);
 
  private slots:
   void on_Button_0_clicked();
