@@ -10,16 +10,17 @@ double Model::CalcExp(std::deque<Model::Node> expr, int& err) {
     } else if (i->type <= 6) {
       err = BinOpCalc(stack, i->type);
     } else if (i->type > 6 && i->type <= 17) {
-      UnOpCalc(stack, i->type);
+      err = UnOpCalc(stack, i->type);
     }
   }
   return stack.top().value;
 }
 
-void Model::UnOpCalc(std::stack<Model::Node>& stack, Model::NodeType oper) {
+int Model::UnOpCalc(std::stack<Model::Node>& stack, Model::NodeType oper) {
   double value = stack.top().value;
   stack.pop();
   double val = 0;
+  int err = 0;
   switch (oper) {
     case UNAR_M:
       val = (-1) * value;
@@ -28,13 +29,22 @@ void Model::UnOpCalc(std::stack<Model::Node>& stack, Model::NodeType oper) {
       val = value;
       break;
     case SQRT:
-      val = sqrt(value);
+      if (value < 0)
+        err = 2;
+      else
+        val = sqrt(value);
       break;
     case LN:
-      val = log(value);
+      if (value < 0)
+        err = 2;
+      else
+        val = log(value);
       break;
     case LOG:
-      val = log10(value);
+      if (value < 0)
+        err = 2;
+      else
+        val = log10(value);
       break;
     case SIN:
       val = sin(value);
@@ -59,6 +69,7 @@ void Model::UnOpCalc(std::stack<Model::Node>& stack, Model::NodeType oper) {
   }
   Model::Node res(Model::DIGIT, 0, val);
   stack.push(res);
+  return err;
 }
 
 int Model::BinOpCalc(std::stack<Model::Node>& stack, Model::NodeType oper) {
@@ -85,7 +96,11 @@ int Model::BinOpCalc(std::stack<Model::Node>& stack, Model::NodeType oper) {
       val = value1 * value2;
       break;
     case POW:
-      val = pow(value2, value1);
+      if ((value2 == 0 && value1 == 0) ||
+          (value2 < 0 && value1 - std::floor(value1) != 0))
+        err = 2;
+      else
+        val = pow(value2, value1);
       break;
     case MOD:
       val = fmod(value2, value1);

@@ -155,14 +155,13 @@ void MainWindow::simpleExp() {
     std::string executorOutput = controller.Executor(strInput);
     stringConverter(executorOutput);
     double resultValue = std::stod(executorOutput);
-    std::cout <<"Huina " << resultValue << std::endl;
-    QString qOutput = QString::number(resultValue, 'g', 15);
+    QString qOutput = QString::number(resultValue, 'g', 16);
     qOutput.replace(",",".");
     ui->result->setText(qOutput);
   } catch (const std::invalid_argument& e) {
     ui->result->setText("INCORRECT INPUT");
   } catch (const std::domain_error& e) {
-    ui->result->setText("DIVISION BY ZERO");
+    ui->result->setText("INCORRECT OPERATION");
   }
 }
 
@@ -234,7 +233,7 @@ void MainWindow::calcOneValue(QString for_x_calc) {
     } catch (const std::invalid_argument& e) {
         ui->result->setText("INCORRECT INPUT");
     } catch (const std::domain_error& e) {
-        ui->result->setText("DIVISION BY ZERO");
+        ui->result->setText("INCORRECT OPERATION");
     }
 }
 

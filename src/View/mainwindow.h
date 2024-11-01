@@ -68,6 +68,6 @@ class MainWindow : public QMainWindow {
   void on_pushButton_X_clicked();
   void on_pushButton_CREDIT_clicked();
   void calcOneValue(QString for_x_calc);
-  void stringConverter(std::string& input);
+  void stringConverter(std::string &input);
 };
 #endif  // MAINWINDOW_H

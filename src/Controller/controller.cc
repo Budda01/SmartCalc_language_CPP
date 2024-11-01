@@ -8,10 +8,10 @@ std::string Controller::Executor(const std::string input) {
   if (err == 1)
     throw std::invalid_argument("INCORRECT INPUT");
   else if (err == 2)
-    throw std::domain_error("DIVISION BY ZERO");
+    throw std::domain_error("INCORRECT OPERATION");
   else
-  return output;
-} 
+    return output;
+}
 
 std::string Controller::CreditExecutor(int mode, const std::string sum,
                                        const std::string time,

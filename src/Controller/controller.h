@@ -2,6 +2,7 @@
 #define CONTROLLER_H
 
 #include <stdexcept>
+
 #include "../Model/model.h"
 
 namespace s21 {

@@ -246,7 +246,8 @@ void Model::Transform(Model::Stack& string, std::deque<Model::Node>& queue) {
 
 void Model::ProcPriority(Model::Stack& stack, std::deque<Model::Node>& queue,
                          Node cur_node) {
-  while (!stack.stack_data.empty() && stack.stack_data.top().type != OP_BRACKET &&
+  while (!stack.stack_data.empty() &&
+         stack.stack_data.top().type != OP_BRACKET &&
          stack.stack_data.top().priority >= cur_node.priority) {
     queue.push_back(stack.stack_data.top());
     stack.stack_data.pop();
@@ -255,7 +256,8 @@ void Model::ProcPriority(Model::Stack& stack, std::deque<Model::Node>& queue,
 }
 
 void Model::ProcBracket(Model::Stack& stack, std::deque<Model::Node>& queue) {
-  while (!stack.stack_data.empty() && stack.stack_data.top().type != OP_BRACKET) {
+  while (!stack.stack_data.empty() &&
+         stack.stack_data.top().type != OP_BRACKET) {
     queue.push_back(stack.stack_data.top());
     stack.stack_data.pop();
   }

@@ -4,11 +4,11 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <deque>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <stack>
-#include <deque>
 #include <string>
 
 namespace s21 {
@@ -70,7 +70,7 @@ class Model {
   void ProcBracket(Model::Stack& stack, std::deque<Model::Node>& queue);
   double CalcExp(std::deque<Model::Node> expr, int& err);
   int BinOpCalc(std::stack<Model::Node>& stack, Model::NodeType oper);
-  void UnOpCalc(std::stack<Model::Node>& stack, Model::NodeType oper);
+  int UnOpCalc(std::stack<Model::Node>& stack, Model::NodeType oper);
 
   int DiffCreditCalc(const std::string& sum, const std::string& time,
                      const std::string& rate, std::string& output);
