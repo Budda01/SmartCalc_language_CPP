@@ -96,6 +96,80 @@ TEST_F(ModelTests, ErrSmartCalc) {
   EXPECT_TRUE(model.SmartCalc("455.012.31", res));
 }
 
+TEST_F(ModelTests, CheckForOperTest) {
+  s21::Model::Node node(s21::Model::MUL, 2, 0);
+  EXPECT_TRUE(model.CheckForOper(node.type));
+  s21::Model::Node node2(s21::Model::PLUS, 2, 0);
+  EXPECT_TRUE(model.CheckForOper(node2.type));
+  s21::Model::Node node3(s21::Model::OP_BRACKET, 2, 0);
+  EXPECT_FALSE(model.CheckForOper(node3.type));
+}
+
+
+TEST_F(ModelTests, ErrDiffCreditCalc1) {
+  const std::string sum = "-2";
+  const std::string time = "12";
+  const std::string rate = "5";
+  std::string output;
+  EXPECT_TRUE(model.DiffCreditCalc(sum,time, rate, output));
+}
+
+TEST_F(ModelTests, ErrDiffCreditCalc2) {
+  const std::string sum = "1000";
+  const std::string time = "-12";
+  const std::string rate = "5";
+  std::string output;
+  EXPECT_TRUE(model.DiffCreditCalc(sum,time, rate, output));
+}
+
+TEST_F(ModelTests, ErrDiffCreditCalc3) {
+  const std::string sum = "3312542";
+  const std::string time = "12";
+  const std::string rate = "-15";
+  std::string output;
+  EXPECT_TRUE(model.DiffCreditCalc(sum,time, rate, output));
+}
+
+TEST_F(ModelTests, DiffCreditCalc) {
+  const std::string sum = "3312542";
+  const std::string time = "12";
+  const std::string rate = "15";
+  std::string output;
+  EXPECT_FALSE(model.DiffCreditCalc(sum,time, rate, output));
+}
+
+TEST_F(ModelTests, ErrAnnCreditCalc1) {
+  const std::string sum = "-2";
+  const std::string time = "12";
+  const std::string rate = "5";
+  std::string output;
+  EXPECT_TRUE(model.AnnCreditCalc(sum,time, rate, output));
+}
+
+TEST_F(ModelTests, ErrAnnCreditCalc2) {
+  const std::string sum = "1000";
+  const std::string time = "-12";
+  const std::string rate = "5";
+  std::string output;
+  EXPECT_TRUE(model.AnnCreditCalc(sum,time, rate, output));
+}
+
+TEST_F(ModelTests, ErrAnnCreditCalc3) {
+  const std::string sum = "3312542";
+  const std::string time = "12";
+  const std::string rate = "-15";
+  std::string output;
+  EXPECT_TRUE(model.AnnCreditCalc(sum,time, rate, output));
+}
+
+TEST_F(ModelTests, AnnCreditCalc) {
+  const std::string sum = "3312542";
+  const std::string time = "12";
+  const std::string rate = "15";
+  std::string output;
+  EXPECT_FALSE(model.AnnCreditCalc(sum,time, rate, output));
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

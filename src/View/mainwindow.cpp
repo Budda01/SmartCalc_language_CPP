@@ -156,7 +156,7 @@ void MainWindow::simpleExp() {
     stringConverter(executorOutput);
     double resultValue = std::stod(executorOutput);
     QString qOutput = QString::number(resultValue, 'g', 16);
-    qOutput.replace(",",".");
+    qOutput.replace(",", ".");
     ui->result->setText(qOutput);
   } catch (const std::invalid_argument& e) {
     ui->result->setText("INCORRECT INPUT");
@@ -165,9 +165,9 @@ void MainWindow::simpleExp() {
   }
 }
 
-void MainWindow::stringConverter(std::string& input){
-  for (auto i = input.begin(); i != input.end(); ++i){
-    if (*i == '.'){
+void MainWindow::stringConverter(std::string& input) {
+  for (auto i = input.begin(); i != input.end(); ++i) {
+    if (*i == '.') {
       *i = ',';
     }
   }
@@ -208,33 +208,32 @@ void MainWindow::calcValues() {
     j++;
     i += 0.1;
   }
-  
+
   graph->drawPlot(res);
-  graph->show(); 
-  
+  graph->show();
 }
 
 void MainWindow::calcOneValue(QString for_x_calc) {
-    QString calc_one = ui->result->text();
-    calc_one.replace("X = ", "");
-    for_x_calc.replace("x", "(Q)");
-    for_x_calc.replace("Q", calc_one);
-    QByteArray byteArray = for_x_calc.toUtf8();
-    const std::string strInput = byteArray.constData();
-    s21::Model model;
-    s21::Controller controller(&model);
-    try {
-        std::string executorOutput = controller.Executor(strInput);
-        stringConverter(executorOutput);
-        double resultValue = std::stod(executorOutput);
-        QString qOutput = QString::number(resultValue, 'g', 15);
-        qOutput.replace(",","."); 
-        ui->result->setText(qOutput);
-    } catch (const std::invalid_argument& e) {
-        ui->result->setText("INCORRECT INPUT");
-    } catch (const std::domain_error& e) {
-        ui->result->setText("INCORRECT OPERATION");
-    }
+  QString calc_one = ui->result->text();
+  calc_one.replace("X = ", "");
+  for_x_calc.replace("x", "(Q)");
+  for_x_calc.replace("Q", calc_one);
+  QByteArray byteArray = for_x_calc.toUtf8();
+  const std::string strInput = byteArray.constData();
+  s21::Model model;
+  s21::Controller controller(&model);
+  try {
+    std::string executorOutput = controller.Executor(strInput);
+    stringConverter(executorOutput);
+    double resultValue = std::stod(executorOutput);
+    QString qOutput = QString::number(resultValue, 'g', 15);
+    qOutput.replace(",", ".");
+    ui->result->setText(qOutput);
+  } catch (const std::invalid_argument& e) {
+    ui->result->setText("INCORRECT INPUT");
+  } catch (const std::domain_error& e) {
+    ui->result->setText("INCORRECT OPERATION");
+  }
 }
 
 void MainWindow::on_pushButton_EQ_clicked() {

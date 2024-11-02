@@ -1,11 +1,9 @@
 #include "credit.h"
 
+#include "../Controller/controller.h"
 #include "ui_credit.h"
 
-#include "../Controller/controller.h"
-
-
-Credit::Credit(QWidget *parent) : QMainWindow(parent), ui(new Ui::Credit) {
+Credit::Credit(QWidget* parent) : QMainWindow(parent), ui(new Ui::Credit) {
   ui->setupUi(this);
 }
 
@@ -117,17 +115,17 @@ void Credit::on_Button_EQ_clicked() {
   std::string output;
   s21::Model model;
   s21::Controller controller(&model);
-  try{
-    if (ui->annuit->isChecked()){
+  try {
+    if (ui->annuit->isChecked()) {
       output = controller.CreditExecutor(1, sum, time, rate);
       QString qOutput = ConvStr(output);
       ui->Res->setText(qOutput);
-    } else if (ui->diff->isChecked()){
+    } else if (ui->diff->isChecked()) {
       output = controller.CreditExecutor(2, sum, time, rate);
       QString qOutput = ConvStr(output);
       ui->Res->setText(qOutput);
     }
-  } catch (const std::invalid_argument& e){
+  } catch (const std::invalid_argument& e) {
     ui->Res->setText("INCORRECT INPUT");
   }
 }
