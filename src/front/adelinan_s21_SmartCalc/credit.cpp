@@ -1,9 +1,12 @@
 #include "credit.h"
 
-#include "../Controller/controller.h"
 #include "ui_credit.h"
 
-Credit::Credit(QWidget* parent) : QMainWindow(parent), ui(new Ui::Credit) {
+extern "C" {
+#include "../../s21_SmartCalc.h"
+}
+
+Credit::Credit(QWidget *parent) : QMainWindow(parent), ui(new Ui::Credit) {
   ui->setupUi(this);
 }
 
@@ -93,9 +96,12 @@ void Credit::on_Button_C_clicked() {
   if (count == 3) ui->Rate->setText("");
 }
 
-QString Credit::ConvStr(std::string& result) {
-  QString qOutput = QString::fromStdString(result);
+QString Credit::conv_str(char *result) {
+  std::string output;
+  output = result;
+  QString qOutput = QString::fromStdString(output);
   qOutput.replace(",", ".");
+
   qOutput = qOutput.trimmed();
   if (qOutput.contains('.')) {
     while (qOutput.endsWith('0')) {
@@ -107,25 +113,30 @@ QString Credit::ConvStr(std::string& result) {
   }
   return qOutput;
 }
-
 void Credit::on_Button_EQ_clicked() {
-  std::string sum = ui->Sum->text().toStdString();
-  std::string time = ui->Time->text().toStdString();
-  std::string rate = ui->Rate->text().toStdString();
-  std::string output;
-  s21::Model model;
-  s21::Controller controller(&model);
-  try {
-    if (ui->annuit->isChecked()) {
-      output = controller.CreditExecutor(1, sum, time, rate);
-      QString qOutput = ConvStr(output);
-      ui->Res->setText(qOutput);
-    } else if (ui->diff->isChecked()) {
-      output = controller.CreditExecutor(2, sum, time, rate);
-      QString qOutput = ConvStr(output);
+  char out[256];
+  int err = 0;
+  QString input_sum = ui->Sum->text();
+  QByteArray byteArrayS = input_sum.toUtf8();
+  const char *Sum_c = byteArrayS.constData();
+  QString input_time = ui->Time->text();
+  QByteArray byteArrayT = input_time.toUtf8();
+  const char *Time_c = byteArrayT.constData();
+  QString input_rate = ui->Rate->text();
+  QByteArray byteArrayR = input_rate.toUtf8();
+  const char *Rate_c = byteArrayR.constData();
+  if (ui->annuit->isChecked()) {
+    err = ann_credit_calc(Sum_c, Time_c, Rate_c, out);
+    if (!err) {
+      QString qOutput = conv_str(out);
       ui->Res->setText(qOutput);
     }
-  } catch (const std::invalid_argument& e) {
+  } else if (ui->diff->isChecked()) {
+    err = diff_credit_calc(Sum_c, Time_c, Rate_c, out);
+    if (!err) {
+      QString qOutput = conv_str(out);
+      ui->Res->setText(qOutput);
+    }
+  } else
     ui->Res->setText("INCORRECT INPUT");
-  }
 }

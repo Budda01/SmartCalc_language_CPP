@@ -3,10 +3,12 @@
 #include <iomanip>
 #include <locale>
 
-#include "../Controller/controller.h"
 #include "./ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget* parent)
+extern "C" {
+#include "../../s21_SmartCalc.h"
+}
+MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
   graph = nullptr;
@@ -145,44 +147,25 @@ void MainWindow::on_pushButton_CREDIT_clicked() {
   credit->show();
 }
 
-void MainWindow::simpleExp() {
+void MainWindow::simple_exp() {
+  char out[256];
   QString input = ui->result->text();
+
   QByteArray byteArray = input.toUtf8();
-  const std::string strInput = byteArray.constData();
-  s21::Model model;
-  s21::Controller controller(&model);
-  try {
-    std::string executorOutput = controller.Executor(strInput);
-    stringConverter(executorOutput);
-    double resultValue = std::stod(executorOutput);
-    QString qOutput = QString::number(resultValue, 'g', 16);
-    qOutput.replace(",", ".");
-    ui->result->setText(qOutput);
-  } catch (const std::invalid_argument& e) {
-    ui->result->setText("INCORRECT INPUT");
-  } catch (const std::domain_error& e) {
-    ui->result->setText("INCORRECT OPERATION");
-  }
-}
+  const char *str_c = byteArray.constData();
 
-void MainWindow::stringConverter(std::string& input) {
-  for (auto i = input.begin(); i != input.end(); ++i) {
-    if (*i == '.') {
-      *i = ',';
-    }
-  }
+  int err = s21_smart_calc(str_c, out);
+  Output_and_err(out, err, 0);
 }
-
-void MainWindow::calcValues() {
+int MainWindow::calc_values() {
   double res[100] = {0};
   int j = 0;
+  int err = 0;
   QString input = ui->result->text();
   double i = -5;
 
-  s21::Model model;
-  s21::Controller controller(&model);
-
-  while (i < 5) {
+  while (i < 5 && !err) {
+    char out[256];
     double resultValue;
     QString newInput = input;
     std::string output;
@@ -192,50 +175,30 @@ void MainWindow::calcValues() {
     newInput.replace("x", "(Q)");
     newInput.replace("Q", QString::fromStdString(output));
     QByteArray byteArray = newInput.toUtf8();
-    const std::string strInput = byteArray.constData();
-    try {
-      std::string executorOutput = controller.Executor(strInput);
-      stringConverter(executorOutput);
-      resultValue = std::stod(executorOutput);
-      res[j] = resultValue;
-    } catch (const std::invalid_argument& e) {
-      ui->result->setText("INCORRECT INPUT");
-    } catch (const std::domain_error& e) {
-      i += 0.1;
-      res[j] = 0;
-      continue;
-    }
+    const char *str_c = byteArray.constData();
+    err = s21_smart_calc(str_c, out);
+    resultValue = std::stod(out);
+    res[j] = resultValue;
     j++;
     i += 0.1;
   }
-
-  graph->drawPlot(res);
-  graph->show();
+  if (!err) {
+    graph->drawPlot(res);
+  }
+  return err;
 }
-
-void MainWindow::calcOneValue(QString for_x_calc) {
+void MainWindow::calc_one_value(QString for_x_calc) {
+  char out[256];
+  int err = 0;
   QString calc_one = ui->result->text();
   calc_one.replace("X = ", "");
   for_x_calc.replace("x", "(Q)");
   for_x_calc.replace("Q", calc_one);
   QByteArray byteArray = for_x_calc.toUtf8();
-  const std::string strInput = byteArray.constData();
-  s21::Model model;
-  s21::Controller controller(&model);
-  try {
-    std::string executorOutput = controller.Executor(strInput);
-    stringConverter(executorOutput);
-    double resultValue = std::stod(executorOutput);
-    QString qOutput = QString::number(resultValue, 'g', 15);
-    qOutput.replace(",", ".");
-    ui->result->setText(qOutput);
-  } catch (const std::invalid_argument& e) {
-    ui->result->setText("INCORRECT INPUT");
-  } catch (const std::domain_error& e) {
-    ui->result->setText("INCORRECT OPERATION");
-  }
+  const char *str_c = byteArray.constData();
+  err = s21_smart_calc(str_c, out);
+  Output_and_err(out, err, 0);
 }
-
 void MainWindow::on_pushButton_EQ_clicked() {
   if (check_calc == 0) {
     QString input = ui->result->text();
@@ -246,13 +209,27 @@ void MainWindow::on_pushButton_EQ_clicked() {
         check_calc = 1;
       } else if (ui->Graf->isChecked()) {
         openGraph();
-        calcValues();
+        int err = calc_values();
+        Output_and_err(NULL, err, 1);
       }
     } else {
-      simpleExp();
+      simple_exp();
     }
   } else {
     check_calc = 0;
-    calcOneValue(for_x_calc);
+    calc_one_value(for_x_calc);
+  }
+}
+
+void MainWindow::Output_and_err(char *setingtxt, int err, int check_gr) {
+  if (err == 1) {
+    ui->result->setText("INCORRECT INPUT");
+  } else if (err == 2) {
+    ui->result->setText("DIVISION BY ZERO");
+  } else if (check_gr == 1) {
+    graph->show();
+  } else if (!check_gr) {
+    QString qOutput = credit->conv_str(setingtxt);
+    ui->result->setText(qOutput);
   }
 }

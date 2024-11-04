@@ -1,65 +1,56 @@
-.PHONY: all clean tests gcov_report style install uninstall dvi dist
+.PHONY: all clean test gcov_report clang
 
-CC = g++ -std=c++17 -Wall -Werror -Wextra -lstdc++ 
-LIBS = -lgtest -pthread
-GCOV = --coverage
-TARGET = adelinan_s21_SmartCalc
-INSTALL_DIR = ~/Desktop
-SRC = ./Model/calculation.cc ./Model/parsing.cc ./Model/credit_calc.cc
-DIST_DIR = ./dist
-UNAME_S := $(shell uname -s)
+GCC = gcc -Wall -Werror -Wextra -std=c11
 
+OS := $(shell uname -s)
+TARGET= adelinan_s21_SmartCalc
 
-ifeq ($(UNAME_S),Linux)
-    OPEN_CMD = xdg-open
-else ifeq ($(UNAME_S),Darwin)
-    OPEN_CMD = open
+ifeq ($(OS), Linux)
+	LIB = -lcheck -lrt -lpthread -lsubunit -lm
+	LEAK = valgrind --tool=memcheck --leak-check=yes
+	OPEN = xdg-open
 endif
 
-all: clean uninstall install
+ifeq ($(OS), Darwin)
+	LIB = -lcheck
+	OPEN = open
+endif
+
+all: test clean install
 
 install:
 	@echo INSTALLATION IN PROGRESS...
 	@mkdir -p build
-	@cd View && qmake && sudo make install && mv $(TARGET) ../build/$(TARGET) && make clean && rm -rf Makefile
+	@cd front/adelinan_s21_SmartCalc && qmake && sudo make install && mv $(TARGET) ../../build/$(TARGET) && make clean && rm -rf Makefile
 	@cd ../..
-	@cp -R build/$(TARGET) $(INSTALL_DIR)
-	@echo INSTALLATION SUCCESSFUL
+	cp -R build/$(TARGET) ~/Desktop
+	
 
 uninstall:
 	@rm -rf build
-	@rm -rf $(INSTALL_DIR)/$(TARGET)
+	@rm -rf ~/Desktop/$(TARGET)
+	
+test: clean
+	@$(GCC) tests/*.c calculator/*.c $(LIB) -o s21_test
+	@./s21_test
 
-tests: clean
-	$(CC) ./tests/test.cc $(SRC) -o test.out $(LIBS)
-	@./test.out
+gcov_report : clean
+	@$(GCC) calculator/*.c tests/*.c --coverage $(LIB) -o s21_test
+	@./s21_test
+	@mkdir ./report 
+	@mv *.g* ./report
+	@lcov -c -q -d ./report -o ./report/coverage.info
+	@genhtml -q ./report/coverage.info -o ./report
+	@$(OPEN) report/index.html
 
-style:
-	@cp ../materials/linters/.clang-format ./
-	@clang-format -n ./*/*.cc ./*/*.h
-	@rm -rf .clang-format
+style: clean
+	clang-format -style=Google -n s21_SmartCalc.h
+	clang-format -style=Google -n tests/*.h tests/*.c
+	clang-format -style=Google -n calculator/*.c
+	clang-format -style=Google -n front/adelinan_s21_SmartCalc/*.cpp front/adelinan_s21_SmartCalc/*.h
+clean :
+	@rm -rf *.o *.a s21_calc s21_test *.gcda *.gcno coverage.info ./report tmp
 
-clean: clean_test
-	@rm -rf $(DIST_DIR)
-	@rm -rf *.o ./*.a report tmp $(TARGET)
-
-clean_test:
-	@rm -rf *.gcda *.gcno test.out test *.info
-
-dvi:
-	@$(OPEN_CMD) README.md
-
-dist: install
-	@mkdir -p $(DIST_DIR)
-	@cp -R build/$(TARGET) $(DIST_DIR)
-	@cd $(DIST_DIR) && tar cvzf $(TARGET).tgz $(TARGET)
-	@rm -rf $(DIST_DIR)/$(TARGET)
-
-gcov_report: clean 
-	$(CC) $(GCOV) tests/test.cc $(SRC) -o test.out $(LIBS)
-	@./test.out
-	@lcov -t "test" -o test.info -c -d . --include "$(PWD)/Model/calculation.cc" --include "$(PWD)/Model/credit_calc.cc" --include "$(PWD)/Model/parsing.cc"
-	@genhtml -o report test.info
-	@$(OPEN_CMD) ./report/index.html
-	@make clean_test
+leaks: test
+	@$(LEAK) ./s21_test
 

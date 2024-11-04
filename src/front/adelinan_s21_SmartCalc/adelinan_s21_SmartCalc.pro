@@ -9,14 +9,14 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    ../Model/parsing.cc \
-    ../Model/calculation.cc \
-    ../Model/credit_calc.cc \
-    ../Controller/controller.cc \
+    ../../calculator/calculation.c \
+    ../../calculator/credit_calc.c \
+    ../../calculator/parsing.c \
+    ../../calculator/stack_operations.c \
+    credit.cpp \
     graph.cpp \
     main.cpp \
     mainwindow.cpp \
-    credit.cpp \
     qcustomplot.cpp
 
 HEADERS += \
@@ -26,8 +26,8 @@ HEADERS += \
     qcustomplot.h
 
 FORMS += \
-    graph.ui \
     credit.ui \
+    graph.ui \
     mainwindow.ui
 win32:RC_FILE = file.rc
 # Default rules for deployment.
