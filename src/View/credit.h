@@ -14,7 +14,7 @@ class Credit : public QMainWindow {
   explicit Credit(QWidget *parent = nullptr);
   ~Credit();
   int count = 1;
-  QString conv_str(char *result);
+  QString ConvStr(std::string &result);
 
  private slots:
   void on_Button_0_clicked();

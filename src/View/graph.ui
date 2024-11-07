@@ -14,7 +14,7 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(32, 32, 32)</string>
+   <string notr="true">background-color: rgb(40, 27, 56)</string>
   </property>
   <widget class="QCustomPlot" name="widget" native="true">
    <property name="geometry">
